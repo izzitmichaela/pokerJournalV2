@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Component } from 'react'
 import { useState } from "react";
 import { useCallback } from 'react';
-import { TextInput, StyleSheet, View, Text, Button, TouchableOpacity, Image } from 'react-native';
+import { TextInput, StyleSheet, View, Text, Button, TouchableOpacity, Image, Pressable } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Modal from 'react-native-modal';
 import moment from 'moment';
@@ -113,7 +113,7 @@ export default function SessionScreen({ route, navigation }) {
     //Also includes the player names as well as any notes on the player
     const [HCModalVisible, setHCModalVisible] = useState(false);
     const [HCArray, setHCArray] = useState(['blank', 'blank', 'blank', 'blank','blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank'])
-    const [namesArray, setNamesArray] = useState(['Hero', 'Villain 1', 'Villain 2', 'Villain 3', 'Villain 4', 'Villain 5', 'Villain 6', 'Villain 7', 'Villain 8']);
+    const [namesArray, setNamesArray] = useState([' Hero ', ' Villain 1 ', ' Villain 2 ', ' Villain 3 ', ' Villain 4 ', ' Villain 5 ', ' Villain 6 ', ' Villain 7 ', ' Villain 8 ']);
     const [playerNotesArray, setPlayerNotesArray] = useState(['', '', '', '', '', '', '', '', '']);
     const [recentNote, setRecentNote] = useState('');
     const [activePlayerOptions, setActivePlayerOptions] = useState();
@@ -142,11 +142,11 @@ export default function SessionScreen({ route, navigation }) {
     var temp = []
     for (let i = 0; i<players; i++) {
         temp.push(
-            <TouchableOpacity key={i} onPress={() => {
+            <TouchableOpacity style={styles.editButton} key={i} onPress={() => {
                 setActivePlayerOptions(i);
                 setHCModalVisible(!HCModalVisible)}}>
-                <Text>
-                    Edit
+                <Text style={styles.editButtonText}>
+                       { "   Edit   "}
                 </Text>
             </TouchableOpacity>,
         )
@@ -154,7 +154,7 @@ export default function SessionScreen({ route, navigation }) {
     }
     const [editPButtonArray, setEditPButtonArray]  = useState(temp);
 
-    const [flavorText, setFlavorText] = useState(['standby', 'standby', 'standby', 'standby', 'standby', 'standby', 'standby', 'standby', 'standbyS'])
+    const [flavorText, setFlavorText] = useState(['                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            '])
     const [flavorArray, setFlavorArray] = useState([])
     const [styleCodes, setStyleCodes] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0]) //0 = default, 1 = dealer, 2 = sb, 3 = bb, 4 = active 5 = folded
     const [justStarted, setJustStarted] = useState(false)
@@ -171,6 +171,7 @@ export default function SessionScreen({ route, navigation }) {
 
     const [textArray, setTextArray] = useState(['', '', '', '', '', '', '', '', '']);
     const [posArray, setPosArray] = useState([])
+    const [posDispArray, setPosDispArray] = useState()
     const [bankroll, setBankroll] = useState([(20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2)])
 
 
@@ -303,6 +304,8 @@ export default function SessionScreen({ route, navigation }) {
         setButtonArray(createPlayerArray())
         setBankrollArray(updateBankroll())
         setFlavorArray(createFlavorArray())
+        setPosDispArray(createPosDispArray())
+        console.log(posArray)
     
     }, [remountCount])
 
@@ -323,7 +326,7 @@ export default function SessionScreen({ route, navigation }) {
 
 
         setProgress(0)
-        setFlavorText(['standby', 'standby', 'standby', 'standby', 'standby', 'standby', 'standby', 'standby', 'standbyS'])
+        setFlavorText(['                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            '])
         setStyleCodes([0, 0, 0, 0, 0, 0, 0, 0, 0])
         setActiveCard('')
         setHoleCardActive(false)
@@ -349,11 +352,11 @@ export default function SessionScreen({ route, navigation }) {
         var temp = []
         for (let i = 0; i<players; i++) {
             temp.push(
-                <TouchableOpacity key={i} onPress={() => {
+                <TouchableOpacity style={styles.default} key={i} onPress={() => {
                     setActivePlayerOptions(i);
                     setHCModalVisible(!HCModalVisible)}}>
-                    <Text>
-                        Edit
+                    <Text style={styles.default}>
+                        { "   Edit   "}
                     </Text>
                 </TouchableOpacity>,
             )
@@ -369,21 +372,21 @@ export default function SessionScreen({ route, navigation }) {
         let posBank = []
 
         if (players == 9) {
-            posBank = ['DE' , 'SB', 'BB', 'UTG', 'UTG+1', 'MP', 'MP+1', 'HJ', 'CO']
+            posBank = [' DE ' , ' SB ', ' BB ', ' UTG ', ' UTG+1 ', ' MP ', ' MP+1 ', ' HJ ', ' CO ']
         } else if (players == 8) {
-            posBank = ['DE' , 'SB', 'BB', 'UTG', 'MP', 'MP+1', 'HJ', 'CO']
+            posBank = [' DE ' , ' SB ', ' BB ', ' UTG ', ' MP ', ' MP+1 ', ' HJ ', ' CO ']
         } else if (players == 7) {
-            posBank = ['DE' , 'SB', 'BB', 'UTG', 'MP', 'HJ', 'CO']
+            posBank = [' DE ' , ' SB ', ' BB ', ' UTG ', ' MP ', ' HJ ', ' CO ']
         } else if (players == 6) {
-            posBank = ['DE' , 'SB', 'BB', 'UTG', 'MP', 'CO']
+            posBank = [' DE ' , ' SB ', ' BB ', ' UTG ', ' MP ', ' CO ']
         } else if (players == 5) {
-            posBank = ['DE' , 'SB', 'BB', 'UTG', 'CO']
+            posBank = [' DE ' , ' SB ', ' BB ', ' UTG ', ' CO ']
         } else if (players == 4) {
-            posBank = ['DE' , 'SB', 'BB', 'UTG']
+            posBank = [' DE ' , ' SB ', ' BB ', ' UTG ']
         } else if (players == 3) {
-            posBank = ['DE' , 'SB', 'BB']
+            posBank = [' DE ' , ' SB ', ' BB ']
         } else if (players == 2) {
-            posBank = ['DE/SB' , 'BB']
+            posBank = [' DE/SB ' , ' BB ']
         }
 
 
@@ -574,28 +577,28 @@ export default function SessionScreen({ route, navigation }) {
 
         for (let i=0; i < players; i++) {
 
-            if (styleCodes[i] == 0) {
+            if (styleCodes[i] < 4) {
                 temp.push(<Text style={styles.default} key={i}>{textArray[i]}</Text>)
 
             }
 
-            if (styleCodes[i] == 1) {
-                temp.push(<Text style={styles.dealer} key={i}>{textArray[i]}</Text>)
+            // if (styleCodes[i] == 1) {
+            //     temp.push(<Text style={styles.dealer} key={i}>{textArray[i]}</Text>)
 
-            }
+            // }
 
-            if (styleCodes[i] == 2) {
-                temp.push(<Text style={styles.blinds} key={i}>{textArray[i]}</Text>)
+            // if (styleCodes[i] == 2) {
+            //     temp.push(<Text style={styles.blinds} key={i}>{textArray[i]}</Text>)
 
-            }
+            // }
 
-            if (styleCodes[i] == 3) {
-                temp.push(<Text style={styles.blinds} key={i}>{textArray[i]}</Text>)
+            // if (styleCodes[i] == 3) {
+            //     temp.push(<Text style={styles.blinds} key={i}>{textArray[i]}</Text>)
 
-            }
+            // }
 
             if (styleCodes[i] == 4) {
-                temp.push(<Text style={styles.active} key={i}>{textArray[i]}</Text>)
+                temp.push(<Text style={styles.activePlayer} key={i}>{textArray[i]}</Text>)
 
             }
 
@@ -613,11 +616,33 @@ export default function SessionScreen({ route, navigation }) {
         var temp = []
 
         for (let i=0; i < players; i++) {
-            temp.push(<Text style={styles.default} key={i}>{flavorText[i]}</Text>)
+            if (i == activePlayer) {
+                temp.push(<Text style={styles.activeFlavor} key={i}>{flavorText[i]}</Text>)
+            } else {
+                temp.push(<Text style={styles.default} key={i}>{flavorText[i]}</Text>)
+            }
+            
         }
 
         return temp
 
+    }
+
+    const createPosDispArray = () => {
+        var temp = []
+
+        for (let i = 0; i < players; i++) {
+            if (posArray[i] == " DE ") {
+                temp.push(<Text style={styles.dealerPosSt} key={i}>{posArray[i]}</Text>)
+            } else if (posArray[i] == " BB " || posArray[i] == " SB ") {
+                temp.push(<Text style={styles.blindPosSt} key={i}>{posArray[i]}</Text>)
+            } else {
+                temp.push(<Text style={styles.defaultPosSt} key={i}>{posArray[i]}</Text>)
+            }
+            
+        }
+
+        return temp
     }
 
     const createWinnerArray = () => {
@@ -628,7 +653,7 @@ export default function SessionScreen({ route, navigation }) {
                 <TouchableOpacity key={i} onPress={() => {
                     setActivePlayerOptions(i);
                     setHCModalVisible(!HCModalVisible)}}>
-                    <Text>
+                    <Text style={styles.default}>
                         Select Winner
                     </Text>
                 </TouchableOpacity>,
@@ -644,8 +669,13 @@ export default function SessionScreen({ route, navigation }) {
 
         for (let i=0; i < players; i++) {
             if (progress > 0) {
+                if (i == activePlayer) {
+                    temp.push(<Text style={styles.activeBankRoll} key = {i}> {'$' + bankroll[i] + ' '}</Text>)
+                } else {
+                    temp.push(<Text style={styles.default} key = {i}> {'$' + bankroll[i] + ' '}</Text>)
+                }
 
-                temp.push(<Text style={styles.default} key = {i}> {' $' + bankroll[i]}</Text>)
+                
             }
 
         }
@@ -807,14 +837,13 @@ export default function SessionScreen({ route, navigation }) {
 
                 let netBet = b + highestBet
                 let raised = false
+                let amtRaised = 0
 
                 if (netBet > b) {
                     raised = true
+                    amtRaised = b
                 }
 
-                if (bankTemp[activePlayer] - netBet < 0) {
-                    netBet = bankTemp[activePlayer]
-                }
 
                 let money2Pay = netBet - parseFloat(payments[activePlayer])
 
@@ -835,9 +864,9 @@ export default function SessionScreen({ route, navigation }) {
                 let temp = flavorText
 
                 if (raised == true) {
-                    temp[activePlayer] = ' Raised $' + b.toFixed(2)
+                    temp[activePlayer] = ' Raised $' + amtRaised.toFixed(2) + ' '
                 } else {
-                    temp[activePlayer] = ' Bet $' + b.toFixed(2)
+                    temp[activePlayer] = ' Bet $' + b.toFixed(2) + ' '
                 }
 
                 
@@ -860,7 +889,7 @@ export default function SessionScreen({ route, navigation }) {
         if (activePlayer != closeActionInd || justStarted == true) {
 
             let temp = flavorText
-            temp[activePlayer] = ' Check'
+            temp[activePlayer] = ' Check '
             setFlavorText(temp)
 
             setJustStarted(false)
@@ -891,7 +920,7 @@ export default function SessionScreen({ route, navigation }) {
 
             setPot(pot + parseFloat(netMoney2Pay))
             let temp = flavorText
-            temp[activePlayer] = ' Called $' + parseFloat(netMoney2Pay).toFixed(2)
+            temp[activePlayer] = ' Called $' + parseFloat(netMoney2Pay).toFixed(2) + ' '
             setFlavorText(temp)
 
             setJustStarted(false)
@@ -913,7 +942,7 @@ export default function SessionScreen({ route, navigation }) {
         if (activePlayer != closeActionInd || justStarted == true) {
 
             let temp = flavorText
-            temp[activePlayer] = ' Fold'
+            temp[activePlayer] = ' Fold '
             setNumFolded(numFolded + 1)
 
             
@@ -1286,6 +1315,10 @@ export default function SessionScreen({ route, navigation }) {
             {progress > 0 &&
                 <View style={styles.butRow}>
                     <View>
+                        {posDispArray}
+                    </View>
+
+                    <View>
                         {buttonArray}
                     </View>
 
@@ -1317,7 +1350,7 @@ export default function SessionScreen({ route, navigation }) {
 
                 <View style={styles.row}>
 
-                    <Button title='Start Hand' onPress={() => { 
+                    <TouchableOpacity style={styles.basicButton} onPress={() => { 
                         
                         setActivePlayer(dealerValue + 1);
                         setCloseActionInd(dealerValue + 1);
@@ -1329,10 +1362,14 @@ export default function SessionScreen({ route, navigation }) {
                         setActivePlayerOptions(0);
                         setHCModalVisible(!HCModalVisible) 
                         refresh();
-                        }} />
+                        }}>
+                        <Text style={styles.basicButtonText}>Start Hand</Text>
+                    </TouchableOpacity>
 
 
-                    <Button title='reset Array' onPress={() => { initializeButtonArray() }} />
+                    <TouchableOpacity style={styles.basicButton} onPress={() => { initializeButtonArray() }}>
+                        <Text style={styles.basicButtonText}>Reset Array</Text>
+                    </TouchableOpacity>
 
 
                 </View>
@@ -1341,34 +1378,45 @@ export default function SessionScreen({ route, navigation }) {
 
             
             {activePlayer == closeActionInd && justStarted == false &&
-                
-                <Button title={'Go to ' + stage[progress + 1]} onPress={() => {
-                    setFlavorText(['', '', '', '', '', '', '', '', ''])
+
+                <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                                                            
+                    setFlavorText(['                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            '])
                     setCloseActionInd(dealerValue + 1)
                     nextStage();
                     setJustStarted(true);
                     setActionRecord('');
                     refresh();
-                }} />
+                }}>
+                    <Text style={styles.basicButtonText}>{'Go to ' + stage[progress + 1]}</Text>
+                </TouchableOpacity>
+                
                 
             }  
 
             {progress == 1 && sbPosted == false &&
-                <Button title={"Post Small Blind"} onPress={() => {
+
+                <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                                                            
                     madeABet(smallBlind);
                     setsbPosted(true);
                     refresh();
-                    
-                }} />
+                }}>
+                    <Text style={styles.basicButtonText}>Post Small Blind</Text>
+                </TouchableOpacity>
             }
 
             {progress == 1 && sbPosted == true && bbPosted == false &&
-                <Button title={"Post Big Blind"} onPress={() => {
+
+                <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                                                                            
                     madeABet(smallBlind);
                     setbbPosted(true);
                     refresh();
+                }}>
+                    <Text style={styles.basicButtonText}>Post Big Blind</Text>
+                </TouchableOpacity>
                 
-                }} />
             }
 
         
@@ -1385,40 +1433,50 @@ export default function SessionScreen({ route, navigation }) {
                         placeholder={"Input Bet Here"}
                     />
 
-                    <Button title='Bet' onPress={() => {
-                        madeABet(parseFloat(newBet), activePlayer);
-                        refresh();
-                    }} />
+                    <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                            if ((parseFloat(newBet) + parseFloat(highestBet)) <= parseFloat(bankroll[activePlayer])) {
+                                madeABet(parseFloat(newBet), activePlayer);
+                                refresh();
+                            }else {
+                                console.log('Bet Too high!')
+                                console.log('new Bet', newBet)
+                                console.log('highestBet', highestBet)
+                                console.log('bankroll', bankroll[activePlayer])
+                            }
+                        }}>
+                        <Text style={styles.basicButtonText}>Bet/Raise</Text>
+                    </TouchableOpacity>
 
-                    <Button title='Check' onPress={() => {
+                    <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                                            
                         if (betMade == false) {
-                            
+        
                             check();
 
                             refresh();
                             
-                        }
-                    }} />
-
-                    <Button title='Call' onPress={() => {
-
-                        if (betMade == true) {
-
+                        } else {
                             setR(namesArray[activePlayer] + 'Called $' + highestBet.toFixed(2) + '/n')
 
                             call();
 
                             refresh();
                         }
-                    }} />
+                        }}>
+                        <Text style={styles.basicButtonText}>Check/Call</Text>
+                    </TouchableOpacity> 
 
-                    <Button title='Fold' onPress={() => {
-                        setR(namesArray[activePlayer] + 'Folded' + '/n');
+                    <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                                            
+                            setR(namesArray[activePlayer] + 'Folded' + '/n');
 
-                        fold();
+                            fold();
+    
+                            refresh();
+                        }}>
+                        <Text style={styles.basicButtonText}>Fold</Text>
+                    </TouchableOpacity>                   
 
-                        refresh();
-                    }} />
 
                 </View>
 
@@ -1433,11 +1491,15 @@ export default function SessionScreen({ route, navigation }) {
                     
                     <Text>The winner is {namesArray[winnerInd]}</Text>
 
-                    <Button title='New Hand' onPress={() => {
+                    <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                                            
 
-                        storeHand()
-                        resetEverything()
-                        }} />
+                            storeHand()
+                            resetEverything()
+                        }}>
+                        <Text style={styles.basicButtonText}>New Hand</Text>
+                    </TouchableOpacity>  
+
 
                 </View>
 
@@ -1451,12 +1513,16 @@ export default function SessionScreen({ route, navigation }) {
                     <View>
                         <Text>Who won the hand?</Text>
 
+                            
+                        <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                                                
 
-
-                        <Button title='New Hand' onPress={() => {
                             storeHand()
                             resetEverything()
-                        }} />
+
+                            }}>
+                            <Text style={styles.basicButtonText}>New Hand</Text>
+                        </TouchableOpacity>  
 
                     </View>
                 </>
@@ -1467,31 +1533,36 @@ export default function SessionScreen({ route, navigation }) {
             <View style={styles.row}>
 
                 <View>
-                    <Button
-                        title="Add Player"
-                        onPress={() =>removePlayerAndReset(1)}
-                    />
 
-                    <Button
-                        title="Remove Player"
-                        onPress={() => removePlayerAndReset(-1)}
-                    />
+                    
+                    <TouchableOpacity style={styles.basicButton} onPress={() => {removePlayerAndReset(1)}}>
+                        <Text style={styles.basicButtonText}>Add Player</Text>
+                    </TouchableOpacity>  
 
-                    <Button
-                        title="Reset Hand"
-                        onPress={() => resetEverything()}
-                    />
+                    <TouchableOpacity style={styles.basicButton} onPress={() => {removePlayerAndReset(-1)}}>
+                        <Text style={styles.basicButtonText}>Remove Player</Text>
+                    </TouchableOpacity>  
+
+                    <TouchableOpacity style={styles.basicButton} onPress={() => {resetEverything()}}>
+                        <Text style={styles.basicButtonText}>Reset Hand</Text>
+                    </TouchableOpacity>  
 
                 </View>
 
                 <View>
+
+                    <TouchableOpacity style={styles.basicButton} onPress={() => navigation.push('HistoryScreen')}>
+                        <Text style={styles.basicButtonText}>History Screen</Text>
+                    </TouchableOpacity>  
+
+                    <TouchableOpacity style={styles.basicButton} onPress={() => navigation.navigate('Home')}>
+                        <Text style={styles.basicButtonText}>Go To Home</Text>
+                    </TouchableOpacity>  
+
                     
-                    <Button
-                        title="History Screen"
-                        onPress={() => navigation.push('HistoryScreen')}
-                    />
-                    <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
-                    <Button title="Save Hand Record" onPress={() => saveRecord()} />
+                    <TouchableOpacity style={styles.basicButton} onPress={() => saveRecord()}>
+                        <Text style={styles.basicButtonText}>Save Hand Record</Text>
+                    </TouchableOpacity> 
 
                 </View>
 
@@ -1542,30 +1613,139 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
     },
+
     default: {
         alignItems: "center",
+        textAlign: "center",
         backgroundColor: "grey",
+        fontSize: 16,
+        borderWidth: 0.7,
+        //borderColor: "rgb(255,215,0)", 
+        padding: 0,
+        elevation: 0,
+        zIndex: 0,
+        opacity: 0.7
+    },
+
+    defaultPosSt: {
+        alignItems: "center",
+        textAlign: "center",
+        color: "black",
+        fontSize: 17,
+        //borderColor: "rgb(255,215,0)", 
+        padding: 0,
+        elevation: 0,
+        zIndex: 0,
+        opacity: 1
     },
 
     dealer: {
         alignItems: "center",
+        textAlign: "center",
         backgroundColor: "white",
+        fontSize: 16,
+        borderWidth: 0.7,
+        borderColor: "rgb(255,215,0)", 
+        padding: 0,
+        elevation: 0,
+        zIndex: 0,
+        borderColor: "rgb(255,215,0)",
+        opacity: 1
     },
 
     blinds: {
         alignItems: "center",
+        textAlign: "center",
         backgroundColor: "green",
+        fontSize: 16,
+        borderWidth: 0.7,
+        borderColor: "rgb(255,215,0)", 
+        padding: 0,
+        elevation: 0,
+        zIndex: 0,
+        borderColor: "rgb(255,215,0)",
+        opacity: 1
     },
 
-    active: {
+    activePlayer: {
         alignItems: "center",
-        backgroundColor: "red",
+        textAlign: "center",
+        backgroundColor: "grey",
+        fontSize: 16,
+        borderWidth: 0.7,
+        borderBottomColor: "rgb(255,0,0)",
+        borderLeftColor: "rgb(255,0,0)",
+        borderTopColor: "rgb(255,0,0)", 
+        padding: 0,
+        elevation: 0,
+        zIndex: 0,
+        //borderColor: "rgb(255,215,0)",
+        opacity: 1
+    },
+
+    activeFlavor: {
+        alignItems: "center",
+        textAlign: "center",
+        backgroundColor: "grey",
+        fontSize: 16,
+        borderWidth: 0.7,
+        borderBottomColor: "rgb(255,0,0)",
+        borderTopColor: "rgb(255,0,0)", 
+        padding: 0,
+        elevation: 0,
+        zIndex: 0,
+        //borderColor: "rgb(255,215,0)",
+        opacity: 1
+    },
+
+    activeBankRoll: {
+        alignItems: "center",
+        textAlign: "center",
+        backgroundColor: "grey",
+        fontSize: 16,
+        borderWidth: 0.7,
+        borderBottomColor: "rgb(255,0,0)",
+        borderRightColor: "rgb(255,0,0)",
+        borderTopColor: "rgb(255,0,0)", 
+        padding: 0,
+        elevation: 0,
+        zIndex: 0,
+        //borderColor: "rgb(255,215,0)",
+        opacity: 1
     },
     
     folded: {
         alignItems: "center",
+        textAlign: "center",
         backgroundColor: "black",
+        fontSize: 16,
+        borderWidth: 0.7,
+        borderColor: "rgb(255,215,0)", 
+        padding: 0,
+        elevation: 0,
+        zIndex: 0,
+        //borderColor: "rgb(255,215,0)",
+        opacity: 1
     },
+
+    dealerPosSt: {
+        alignItems: "center",
+        textAlign: "center",
+        color: "rgb(255,255,255)",
+        fontSize: 17,
+
+
+    },
+
+    blindPosSt: {
+
+        alignItems: "center",
+        textAlign: "center",
+        color: "rgb(255,215,0)",
+        fontSize: 17,
+
+    },
+
 
     img: {
 
@@ -1603,7 +1783,40 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 10,
         elevation: 2,
-        zIndex: 0
+        zIndex: 0,
+        backgroundColor: "white",
+    },
+
+    basicButton: {
+        borderWidth: 0.7,
+        borderColor: "rgb(255,215,0)", 
+        padding: 10,
+        elevation: 0,
+        zIndex: 0,
+        backgroundColor: "black",
+        borderColor: "rgb(255,215,0)",
+        opacity: 1
+    },
+
+    basicButtonText: {
+
+        color: "rgb(255,215,0)",
+
+    },
+
+    editButton: {
+        borderWidth: 0.7,
+        borderColor: "rgb(255,215,0)", 
+        padding: 0,
+        elevation: 0,
+        zIndex: 0,
+        backgroundColor: "white",
+        borderColor: "rgb(255,215,0)",
+        opacity: 1
+    },
+
+    editButtonText: {
+        fontSize: 16,
     },
 
     winner: {
@@ -1618,9 +1831,11 @@ const styles = StyleSheet.create({
     buttonOpen: {
         backgroundColor: "#F194FF",
     },
+
     buttonClose: {
         backgroundColor: "#2196F3",
     },
+
     textStyle: {
         color: "white",
         fontWeight: "bold",
@@ -1644,7 +1859,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: 'space-between'
 
-    }
+    },
+
+    nameTextSt: {
+        backgroundColor: "white",
+
+    },
+
 });
 
 
