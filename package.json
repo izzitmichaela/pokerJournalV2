@@ -8,12 +8,14 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.15.10",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
     "expo": "~42.0.1",
     "expo-status-bar": "~1.0.4",
     "moment": "^2.29.1",
     "react": "16.13.1",
+    "react-data-table-component": "^7.4.5",
     "react-dom": "16.13.1",
     "react-modal": "^3.14.3",
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
@@ -23,9 +25,11 @@
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "~3.4.0",
     "react-native-scroll-wheel-picker": "^0.0.2",
-    "react-native-web": "~0.13.12",
+    "react-native-table-component": "^1.2.1",
+    "react-native-web": "^0.17.5",
     "react-native-wheel-scrollview-picker": "^1.2.2",
-    "styled-components": "^5.3.1"
+    "react-table": "^7.7.0",
+    "styled-components": "^5.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"

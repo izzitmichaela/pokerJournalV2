@@ -2,12 +2,13 @@ import * as React from 'react';
 import { Component } from 'react'
 import { useState } from "react";
 import { useCallback } from 'react';
-import { TextInput, StyleSheet, View, Text, Button, TouchableOpacity, Image, Pressable } from 'react-native';
+import { TextInput, StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Modal from 'react-native-modal';
 import moment from 'moment';
 import {Dimensions} from 'react-native';
 import { ImageBackground } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import ScrollPicker from 'react-native-scroll-wheel-picker';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -21,6 +22,7 @@ var record = [];
 var currentDate = moment().format("DD/MM/YYYY");
 var currentTime = moment().format("LTS")
 var handNum = 0
+
 
 //var RNFS = require('react-native-fs');
 
@@ -102,6 +104,9 @@ export default function SessionScreen({ route, navigation }) {
     //card picker modal
     const [modalVisible, setModalVisible] = useState(false);
 
+    //File Saver Modal
+    const [fileModalVisible, setFileModalVisible] = useState(false);
+
     //Variables denoting the cards on the board
     const [activeCard, setActiveCard] = useState('');
     const [holeCardActive, setHoleCardActive] = useState(false)
@@ -118,6 +123,7 @@ export default function SessionScreen({ route, navigation }) {
     const [recentNote, setRecentNote] = useState('');
     const [activePlayerOptions, setActivePlayerOptions] = useState();
     const [nameInput, setNameInput] = useState('');
+    const [fileNameInput, setFileNameInput] = useState('');
 
     const [decideWinner, setDecideWinner] = useState(false);
     const [winnerInd, setWinnerInd] = useState(-1);
@@ -153,6 +159,14 @@ export default function SessionScreen({ route, navigation }) {
 
     }
     const [editPButtonArray, setEditPButtonArray]  = useState(temp);
+
+
+    
+
+    const [cardSelButtonArray1, setCardSelButtonArray1] = useState([])
+    const [cardSelButtonArray2, setCardSelButtonArray2] = useState([])
+    const [cardSelButtonArray3, setCardSelButtonArray3] = useState([])
+    const [suitSelButtonArray, setSuitSelButtonArray] = useState([])
 
     const [flavorText, setFlavorText] = useState(['                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            '])
     const [flavorArray, setFlavorArray] = useState([])
@@ -322,9 +336,6 @@ export default function SessionScreen({ route, navigation }) {
     
     const resetEverything= () => {
 
-
-
-
         setProgress(0)
         setFlavorText(['                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            '])
         setStyleCodes([0, 0, 0, 0, 0, 0, 0, 0, 0])
@@ -366,6 +377,219 @@ export default function SessionScreen({ route, navigation }) {
 
         refresh()
     }
+
+    const makeCardSelArray = (selected) => {
+        var temp2 = []
+        var temp3 = []
+        var temp4 = []
+        let cards = [' A ', ' 2 ', ' 3 ', ' 4 ', ' 5 ', ' 6 ', ' 7 ', ' 8 ', ' 9 ', ' T ', ' J ', ' Q ', ' K ']
+        let cardsFull = ['Ace', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King']
+        for (let i = 0; i < 13; i++) {
+            console.log("Loop start")
+
+
+            if (i == 0) {
+                if (i == selected) {
+                    temp2.push(
+                        <TouchableOpacity style={styles.cardSelectSt} key={i} onPress={() => { 
+                            makeCardSelArray(i)
+                            setCardNumValue(cardsFull[i])                                   
+                            }}>
+                            <Text style={styles.cardSelectText}>{cards[i]}</Text>
+                        </TouchableOpacity>  
+                    )
+
+
+                } else {
+                    temp2.push(
+                        <TouchableOpacity style={styles.cardOptionSt} key={i} onPress={() => { 
+                            makeCardSelArray(i)  
+                            setCardNumValue(cardsFull[i])                                     
+                            }}>
+                            <Text style={styles.cardSelectText}>{cards[i]}</Text>
+                        </TouchableOpacity>  
+                    )
+                }
+
+            }
+
+            if (i > 0  &&  i < 7) {
+                if (i == selected) {
+                    temp3.push(              
+                        <TouchableOpacity style={styles.cardSelectSt} key={i} onPress={() => { 
+                            makeCardSelArray(i)
+                            setCardNumValue(cardsFull[i]) 
+                                            
+                            }}>
+                            <Text style={styles.cardSelectText}>{cards[i]}</Text>
+                        </TouchableOpacity>                 
+                    )  
+                } else {
+                    temp3.push(              
+                        <TouchableOpacity style={styles.cardOptionSt} key={i} onPress={() => { 
+                            makeCardSelArray(i)
+                            setCardNumValue(cardsFull[i]) 
+                                            
+                            }}>
+                            <Text style={styles.cardSelectText}>{cards[i]}</Text>
+                        </TouchableOpacity>                 
+                    )  
+                }
+
+        
+            }
+            
+            if (i > 6) {
+                if (i == selected) {
+                    temp4.push(              
+                        <TouchableOpacity style={styles.cardSelectSt} key={i} onPress={() => { 
+                            makeCardSelArray(i)
+                            setCardNumValue(cardsFull[i]) 
+                                                
+                            }}>
+                            <Text style={styles.cardSelectText}>{cards[i]}</Text>
+                        </TouchableOpacity>                 
+                    )  
+
+                } else {
+                    temp4.push(              
+                        <TouchableOpacity style={styles.cardOptionSt} key={i} onPress={() => { 
+                            makeCardSelArray(i)
+                            setCardNumValue(cardsFull[i]) 
+                                                
+                            }}>
+                            <Text style={styles.cardSelectText}>{cards[i]}</Text>
+                        </TouchableOpacity>                 
+                    )  
+                }
+
+            }
+
+        }
+        setCardSelButtonArray1(temp2)
+        setCardSelButtonArray2(temp3)
+        setCardSelButtonArray3(temp4)
+        
+
+    }
+
+    const makeSuitSelArray = (selected) => {
+        var temp = []
+        let suits = [' Spades ', ' Clubs ', ' Diamonds ', ' Hearts ']
+        let suitsCode = ['S', 'C', 'D', 'H']
+        for (let i = 0; i < 4; i++) {
+            if (i == 0) {
+                if (i == selected) {
+                    temp.push(              
+                        <TouchableOpacity style={styles.cardSelectSt} key={i} onPress={() => { 
+                            makeSuitSelArray(i)
+                            setCardSuitValue(suitsCode[i])
+                                                
+                            }}>
+                            <Text style={styles.basicButtonText}>{suits[i]}</Text>
+                        </TouchableOpacity>                 
+                    )  
+    
+                } else {
+                    temp.push(              
+                        <TouchableOpacity style={styles.spadeOption} key={i} onPress={() => { 
+                            makeSuitSelArray(i)
+                            setCardSuitValue(suitsCode[i])
+                                                
+                            }}>
+                            <Text style={styles.basicButtonText}>{suits[i]}</Text>
+                        </TouchableOpacity>                 
+                    )  
+                }
+
+            }
+
+            if (i == 1) {
+                if (i == selected) {
+                    temp.push(              
+                        <TouchableOpacity style={styles.cardSelectSt} key={i} onPress={() => { 
+                            makeSuitSelArray(i)
+                            setCardSuitValue(suitsCode[i])
+                                                
+                            }}>
+                            <Text style={styles.basicButtonText}>{suits[i]}</Text>
+                        </TouchableOpacity>                 
+                    )  
+    
+                } else {
+                    temp.push(              
+                        <TouchableOpacity style={styles.clubOption} key={i} onPress={() => { 
+                            makeSuitSelArray(i)
+                            setCardSuitValue(suitsCode[i])
+                                                
+                            }}>
+                            <Text style={styles.basicButtonText}>{suits[i]}</Text>
+                        </TouchableOpacity>                 
+                    )  
+                }
+
+            }
+
+            if (i == 2) {
+                if (i == selected) {
+                    temp.push(              
+                        <TouchableOpacity style={styles.cardSelectSt} key={i} onPress={() => { 
+                            makeSuitSelArray(i)
+                            setCardSuitValue(suitsCode[i])
+                                                
+                            }}>
+                            <Text style={styles.basicButtonText}>{suits[i]}</Text>
+                        </TouchableOpacity>                 
+                    )  
+    
+                } else {
+                    temp.push(              
+                        <TouchableOpacity style={styles.diamondOption} key={i} onPress={() => { 
+                            makeSuitSelArray(i)
+                            setCardSuitValue(suitsCode[i])
+                                                
+                            }}>
+                            <Text style={styles.basicButtonText}>{suits[i]}</Text>
+                        </TouchableOpacity>                 
+                    )  
+                }
+
+            }
+
+            if (i == 3) {
+                if (i == selected) {
+                    temp.push(              
+                        <TouchableOpacity style={styles.cardSelectSt} key={i} onPress={() => { 
+                            makeSuitSelArray(i)
+                            setCardSuitValue(suitsCode[i])
+                                                
+                            }}>
+                            <Text style={styles.basicButtonText}>{suits[i]}</Text>
+                        </TouchableOpacity>                 
+                    )  
+    
+                } else {
+                    temp.push(              
+                        <TouchableOpacity style={styles.heartOption} key={i} onPress={() => { 
+                            makeSuitSelArray(i)
+                            setCardSuitValue(suitsCode[i])
+                                                
+                            }}>
+                            <Text style={styles.basicButtonText}>{suits[i]}</Text>
+                        </TouchableOpacity>                 
+                    )  
+                }
+
+            }
+
+
+
+        }
+
+        setSuitSelButtonArray(temp)
+
+    }
+
 
     const getPositions = () => {
         
@@ -603,7 +827,7 @@ export default function SessionScreen({ route, navigation }) {
             }
 
             if (styleCodes[i] == 5) {
-                temp.push(<Text style={styles.folded} key={i}>{textArray[i]}</Text>)
+                temp.push(<Text style={styles.default} key={i}>{textArray[i]}</Text>)
 
             }
             
@@ -650,11 +874,11 @@ export default function SessionScreen({ route, navigation }) {
         var temp = []
         for (let i = 0; i<players; i++) {
             temp.push(
-                <TouchableOpacity key={i} onPress={() => {
+                <TouchableOpacity style={styles.editButton} key={i} onPress={() => {
                     setActivePlayerOptions(i);
                     setHCModalVisible(!HCModalVisible)}}>
-                    <Text style={styles.default}>
-                        Select Winner
+                    <Text style={styles.editButtonText}>
+                        {"   Wins   "}
                     </Text>
                 </TouchableOpacity>,
             )
@@ -674,10 +898,8 @@ export default function SessionScreen({ route, navigation }) {
                 } else {
                     temp.push(<Text style={styles.default} key = {i}> {'$' + bankroll[i] + ' '}</Text>)
                 }
-
-                
+              
             }
-
         }
 
         return temp
@@ -889,7 +1111,7 @@ export default function SessionScreen({ route, navigation }) {
         if (activePlayer != closeActionInd || justStarted == true) {
 
             let temp = flavorText
-            temp[activePlayer] = ' Check '
+            temp[activePlayer] = '        Check        '
             setFlavorText(temp)
 
             setJustStarted(false)
@@ -996,46 +1218,30 @@ export default function SessionScreen({ route, navigation }) {
                 >
 
                 <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
+                    <View style={styles.modalView}> 
+                        <View style={styles.rowModal}>
+                            {cardSelButtonArray1}
+                        </View>
 
-                        <DropDownPicker
-                            zindex={2000}
-                            zIndexInverse={1000}
-                            open={cardNumOpen}
-                            onOpen={onCardNumOpen}
-                            value={cardNumValue}
-                            items={cardNumItems}
-                            setOpen={setCardNumOpen}
-                            setValue={setCardNumValue}
-                            setItems={setCardNumItems}
-                        />
+                        <View style={styles.rowModal}>
+                            {cardSelButtonArray2}  
+                        </View> 
 
-                        <Text style={styles.modalText}></Text>
-                        <Text style={styles.modalText}></Text>
-                        <Text style={styles.modalText}></Text>
-                        <Text style={styles.modalText}></Text>
-                        <Text style={styles.modalText}></Text>
-                        <Text style={styles.modalText}></Text>
+                        <View style={styles.rowModal}>
+                            {cardSelButtonArray3}
+                        </View>
 
-                        <DropDownPicker
-                            zindex={1000}
-                            zIndexInverse={2000}
-                            open={cardSuitOpen}
-                            onOpen={onCardSuitOpen}
-                            value={cardSuitValue}
-                            items={cardSuitItems}
-                            setOpen={setCardSuitOpen}
-                            setValue={setCardSuitValue}
-                            setItems={setCardSuitItems}
-                        />
+                        <Text></Text>
 
-                        <Text style={styles.modalText}></Text>
-                        <Text style={styles.modalText}></Text>
-                        <Text style={styles.modalText}></Text>
-                        <Text style={styles.modalText}></Text>
-                        <Text style={styles.modalText}></Text>
+                        <View style={styles.rowModal}>
+                            {suitSelButtonArray}
+                        </View>
 
-                        <View style={styles.row}>
+                        <Text></Text>
+                        <Text></Text>
+                                              
+
+                        <View style={styles.rowModal}>
 
                             <TouchableOpacity
                                 style={[styles.button, styles.buttonClose]}
@@ -1133,7 +1339,9 @@ export default function SessionScreen({ route, navigation }) {
                             <TouchableOpacity onPress={() => {
                                 setHoleCardActive(true)
                                 setActiveCard(2*p);
-                                setModalVisible(!modalVisible)}}>
+                                setModalVisible(!modalVisible)
+                                makeCardSelArray(-1)
+                                makeSuitSelArray(-1)}}>
                                 <View>
                                     <Image source={imageMap[HCArray[2*p]]}  style={styles.img}/>
                                 </View>
@@ -1142,7 +1350,9 @@ export default function SessionScreen({ route, navigation }) {
                             <TouchableOpacity onPress={() => {
                                 setHoleCardActive(true)
                                 setActiveCard(2*p + 1);
-                                setModalVisible(!modalVisible)}}>
+                                setModalVisible(!modalVisible)
+                                makeCardSelArray(-1)
+                                makeSuitSelArray(-1)}}>
                                 <View>
                                     <Image source={imageMap[HCArray[2*p + 1]]}  style={styles.img}/>
                                 </View>
@@ -1212,7 +1422,7 @@ export default function SessionScreen({ route, navigation }) {
                                     refresh();
                                 }}
                                 >
-                                <Text style={styles.textStyle}>Confirm</Text>
+                                <Text style={styles.textStyle}>{"Confirm"}</Text>
                             </TouchableOpacity>
 
                             
@@ -1223,7 +1433,7 @@ export default function SessionScreen({ route, navigation }) {
                                     setModalVisible(false);
                                 }}
                                 >
-                                <Text style={styles.textStyle}>Cancel</Text>
+                                <Text style={styles.textStyle}>{"Cancel"}</Text>
                             </TouchableOpacity>
 
                         </View>
@@ -1278,15 +1488,95 @@ export default function SessionScreen({ route, navigation }) {
             fileContents = fileContents + record[i]
         }
 
-        // RNFS.writeFile(path, fileContents, 'utf8')
-        // .then((success) => {
-        //     console.log('FILE WRITTEN!');
-        // })
-        //     .catch((err) => {
-        //     console.log(err.message);
-        // });
+        storeData(fileContents)
 
         console.log(fileContents)
+        getAllKeys()
+    }
+
+    const saveFileOptions = () => {
+        return (
+            //Put in the modal here
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={fileModalVisible}
+                onRequestClose={() => {
+                Alert.alert("Modal has been closed.");
+                setFileModalVisible(false);
+                }}
+                >
+
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <Text>Please name your session</Text>
+
+                        <TextInput
+                            defaultValue= "My Game"
+                            onChangeText = {setFileNameInput}
+
+                        />
+
+
+
+
+                        <View style={styles.rowModal}>
+
+                    
+                            <TouchableOpacity
+                                style={[styles.button, styles.buttonClose]}
+                                onPress={() => {
+                                    saveRecord();
+                                    setFileModalVisible(!fileModalVisible);
+                                    refresh();
+                                }}
+                                >
+                                <Text style={styles.textStyle}>{"Confirm"}</Text>
+                            </TouchableOpacity>
+
+                            
+                            <TouchableOpacity
+                                style={[styles.button, styles.buttonClose]}
+                                onPress={() => {
+                                    setFileModalVisible(false);
+                                }}
+                                >
+                                <Text style={styles.textStyle}>{"Cancel"}</Text>
+                            </TouchableOpacity>
+
+                        </View>
+
+                        
+
+
+                    </View>
+                </View>
+            </Modal>
+        )
+
+    }
+
+    const storeData = async (value) => {
+        try {
+          await AsyncStorage.setItem(fileNameInput + '_' + currentDate + '_' + currentTime, value)
+        } catch (e) {
+          // saving error
+        }
+    }
+
+    
+
+    getAllKeys = async () => {
+        let keys = []
+        try {
+          keys = await AsyncStorage.getAllKeys()
+        } catch(e) {
+          // read key error
+        }
+      
+        console.log(keys)
+        // example console.log result:
+        // ['@MyApp_user', '@MyApp_key']
     }
 
 
@@ -1312,257 +1602,281 @@ export default function SessionScreen({ route, navigation }) {
                 getPlayerAttributes(activePlayerOptions)
             }
 
+            {fileModalVisible &&
+                saveFileOptions()
+            }
+
             {progress > 0 &&
-                <View style={styles.butRow}>
-                    <View>
-                        {posDispArray}
+                <View style={styles.topSegment}>
+                    <View style={styles.butRow}>
+                        <View>
+                            {posDispArray}
+                        </View>
+
+                        <View>
+                            {buttonArray}
+                        </View>
+
+                        <View>
+                            {flavorArray}
+                        </View>
+
+                        <View>
+                            {bankrollArray}
+                        </View>
+
+                        <View>
+                            {editPButtonArray}
+                        </View>       
                     </View>
-
-                    <View>
-                        {buttonArray}
-                    </View>
-
-                    <View>
-                        {flavorArray}
-                    </View>
-
-                    <View>
-                        {bankrollArray}
-                    </View>
-
-                    <View>
-                        {editPButtonArray}
-                    </View>       
-                </View>
-            }           
-
-            <View>
-                <Text>{"Pot: $"}{pot.toFixed(2)}</Text>
-                <Text>{stage[progress]}</Text>
-            </View>
-
-            <View style={styles.row}>
-                {dropdownOrCards(progress)}
-            </View>
-
-
-            {progress == 0 &&
-
-                <View style={styles.row}>
-
-                    <TouchableOpacity style={styles.basicButton} onPress={() => { 
-                        
-                        setActivePlayer(dealerValue + 1);
-                        setCloseActionInd(dealerValue + 1);
-                        setJustStarted(true);
-                        setPlayerRecord(getPositions());
-                        nextStage();
-
-                        //Brings up the hole card selection modal for player 1
-                        setActivePlayerOptions(0);
-                        setHCModalVisible(!HCModalVisible) 
-                        refresh();
-                        }}>
-                        <Text style={styles.basicButtonText}>Start Hand</Text>
-                    </TouchableOpacity>
-
-
-                    <TouchableOpacity style={styles.basicButton} onPress={() => { initializeButtonArray() }}>
-                        <Text style={styles.basicButtonText}>Reset Array</Text>
-                    </TouchableOpacity>
-
-
-                </View>
-
-            }
-
-            
-            {activePlayer == closeActionInd && justStarted == false &&
-
-                <TouchableOpacity style={styles.basicButton} onPress={() => { 
-                                                            
-                    setFlavorText(['                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            ', '                            '])
-                    setCloseActionInd(dealerValue + 1)
-                    nextStage();
-                    setJustStarted(true);
-                    setActionRecord('');
-                    refresh();
-                }}>
-                    <Text style={styles.basicButtonText}>{'Go to ' + stage[progress + 1]}</Text>
-                </TouchableOpacity>
-                
-                
-            }  
-
-            {progress == 1 && sbPosted == false &&
-
-                <TouchableOpacity style={styles.basicButton} onPress={() => { 
-                                                            
-                    madeABet(smallBlind);
-                    setsbPosted(true);
-                    refresh();
-                }}>
-                    <Text style={styles.basicButtonText}>Post Small Blind</Text>
-                </TouchableOpacity>
-            }
-
-            {progress == 1 && sbPosted == true && bbPosted == false &&
-
-                <TouchableOpacity style={styles.basicButton} onPress={() => { 
-                                                                            
-                    madeABet(smallBlind);
-                    setbbPosted(true);
-                    refresh();
-                }}>
-                    <Text style={styles.basicButtonText}>Post Big Blind</Text>
-                </TouchableOpacity>
-                
-            }
-
-        
-
-            {progress > 0 && progress < 5 && (players - numFolded > 1) && 
-
-            
-                <View style={styles.row}>
-
-                    <TextInput
-                        keyboardType = 'numeric'
-                        onChangeText = {setNewBet}
-                        value={newBet.toString()}
-                        placeholder={"Input Bet Here"}
-                    />
-
-                    <TouchableOpacity style={styles.basicButton} onPress={() => { 
-                            if ((parseFloat(newBet) + parseFloat(highestBet)) <= parseFloat(bankroll[activePlayer])) {
-                                madeABet(parseFloat(newBet), activePlayer);
-                                refresh();
-                            }else {
-                                console.log('Bet Too high!')
-                                console.log('new Bet', newBet)
-                                console.log('highestBet', highestBet)
-                                console.log('bankroll', bankroll[activePlayer])
-                            }
-                        }}>
-                        <Text style={styles.basicButtonText}>Bet/Raise</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.basicButton} onPress={() => { 
-                                            
-                        if (betMade == false) {
-        
-                            check();
-
-                            refresh();
-                            
-                        } else {
-                            setR(namesArray[activePlayer] + 'Called $' + highestBet.toFixed(2) + '/n')
-
-                            call();
-
-                            refresh();
-                        }
-                        }}>
-                        <Text style={styles.basicButtonText}>Check/Call</Text>
-                    </TouchableOpacity> 
-
-                    <TouchableOpacity style={styles.basicButton} onPress={() => { 
-                                            
-                            setR(namesArray[activePlayer] + 'Folded' + '/n');
-
-                            fold();
-    
-                            refresh();
-                        }}>
-                        <Text style={styles.basicButtonText}>Fold</Text>
-                    </TouchableOpacity>                   
-
-
-                </View>
-
-            
-            }
-
-
-            {winnerInd >= 0 &&
-
-                <View>
 
                     
-                    <Text>The winner is {namesArray[winnerInd]}</Text>
+                    <View style={styles.rowSpBet}>
+                        <Text style={styles.potStyle}>{"Pot: $"}{pot.toFixed(2)}</Text>
+                        <Text style={styles.stageStyle}>{"Stage: "}{stage[progress]}</Text>
+                    </View>
+                </View>
+            } 
 
-                    <TouchableOpacity style={styles.basicButton} onPress={() => { 
-                                            
-
-                            storeHand()
-                            resetEverything()
-                        }}>
-                        <Text style={styles.basicButtonText}>New Hand</Text>
-                    </TouchableOpacity>  
+            <View style={styles.midSegment}>
+                      
 
 
+                <View style={styles.row}>
+                    {dropdownOrCards(progress)}
                 </View>
 
-            }
+
+                {progress == 0 &&
+
+                    <View style={styles.row}>
+
+                        <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                            
+                            setActivePlayer(dealerValue + 1);
+                            setCloseActionInd(dealerValue + 1);
+                            setJustStarted(true);
+                            setPlayerRecord(getPositions());
+                            nextStage();
+
+                            //Brings up the hole card selection modal for player 1
+                            setActivePlayerOptions(0);
+                            setHCModalVisible(!HCModalVisible) 
+                            refresh();
+                            }}>
+                            <Text style={styles.basicButtonText}>Start Hand</Text>
+                        </TouchableOpacity>
+
+
+                        <TouchableOpacity style={styles.basicButton} onPress={() => { initializeButtonArray() }}>
+                            <Text style={styles.basicButtonText}>Reset Array</Text>
+                        </TouchableOpacity>
+
+
+                    </View>
+
+                }
+
+                
+                {activePlayer == closeActionInd && justStarted == false &&
+
+                    <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                        let temp = flavorText
+                        for (let i = 0; i < players; i++) {
+                            if (flavorText[i] == ' Fold ') {
+                                temp[i] = flavorText[i]
+                            } else {
+                                temp[i] = '                            '
+                            }
+                        }
+
+                        setFlavorText(temp)
+                        setCloseActionInd(dealerValue + 1)
+                        nextStage();
+                        setJustStarted(true);
+                        setActionRecord('');
+                        refresh();
+                    }}>
+                        <Text style={styles.basicButtonText}>{'Go to ' + stage[progress + 1]}</Text>
+                    </TouchableOpacity>
+                    
+                    
+                }  
+
+                {progress == 1 && sbPosted == false &&
+
+                    <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                                                                
+                        madeABet(smallBlind);
+                        setsbPosted(true);
+                        refresh();
+                    }}>
+                        <Text style={styles.basicButtonText}>Post Small Blind</Text>
+                    </TouchableOpacity>
+                }
+
+                {progress == 1 && sbPosted == true && bbPosted == false &&
+
+                    <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                                                                                
+                        madeABet(smallBlind);
+                        setbbPosted(true);
+                        refresh();
+                    }}>
+                        <Text style={styles.basicButtonText}>Post Big Blind</Text>
+                    </TouchableOpacity>
+                    
+                }
 
             
 
-            {(progress == 5) && winnerInd < 0 &&
+                {progress > 0 && progress < 5 && (players - numFolded > 1) && 
 
-                <>            
+                
+                    <View style={styles.row}>
+
+                        <TextInput
+                            keyboardType = 'numeric'
+                            onChangeText = {setNewBet}
+                            value={newBet.toString()}
+                            placeholder={"Input Bet Here"}
+                        />
+
+                        <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                                if ((parseFloat(newBet) + parseFloat(highestBet)) <= parseFloat(bankroll[activePlayer])) {
+                                    madeABet(parseFloat(newBet), activePlayer);
+                                    refresh();
+                                }else {
+                                    console.log('Bet Too high!')
+                                    console.log('new Bet', newBet)
+                                    console.log('highestBet', highestBet)
+                                    console.log('bankroll', bankroll[activePlayer])
+                                }
+                            }}>
+                            <Text style={styles.basicButtonText}>Bet/Raise</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                                                
+                            if (betMade == false) {
+            
+                                check();
+
+                                refresh();
+                                
+                            } else {
+                                setR(namesArray[activePlayer] + 'Called $' + highestBet.toFixed(2) + '/n')
+
+                                call();
+
+                                refresh();
+                            }
+                            }}>
+                            <Text style={styles.basicButtonText}>Check/Call</Text>
+                        </TouchableOpacity> 
+
+                        <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                                                
+                                setR(namesArray[activePlayer] + 'Folded' + '/n');
+
+                                fold();
+        
+                                refresh();
+                            }}>
+                            <Text style={styles.basicButtonText}>Fold</Text>
+                        </TouchableOpacity>                   
+
+
+                    </View>
+
+                
+                }
+
+
+                {winnerInd >= 0 &&
+
                     <View>
-                        <Text>Who won the hand?</Text>
 
-                            
+                        
+                        <Text>The winner is {namesArray[winnerInd]}</Text>
+
                         <TouchableOpacity style={styles.basicButton} onPress={() => { 
                                                 
 
-                            storeHand()
-                            resetEverything()
-
+                                storeHand()
+                                resetEverything()
                             }}>
                             <Text style={styles.basicButtonText}>New Hand</Text>
                         </TouchableOpacity>  
 
+
                     </View>
-                </>
 
-            }
+                }
+
+                
+
+                {(progress == 5) && winnerInd < 0 &&
+
+                    <>            
+                        <View>
+                            <Text>Who won the hand?</Text>
+
+                                
+                            <TouchableOpacity style={styles.basicButton} onPress={() => { 
+                                                    
+
+                                storeHand()
+                                resetEverything()
+
+                                }}>
+                                <Text style={styles.basicButtonText}>New Hand</Text>
+                            </TouchableOpacity>  
+
+                        </View>
+                    </>
+
+                }
+            </View>
+
+            <View style={styles.botSegment}>
 
 
-            <View style={styles.row}>
+                <View style={styles.row}>
 
-                <View>
+                    <View>
 
-                    
-                    <TouchableOpacity style={styles.basicButton} onPress={() => {removePlayerAndReset(1)}}>
-                        <Text style={styles.basicButtonText}>Add Player</Text>
-                    </TouchableOpacity>  
+                        
+                        <TouchableOpacity style={styles.basicButton} onPress={() => {removePlayerAndReset(1)}}>
+                            <Text style={styles.basicButtonText}>Add Player</Text>
+                        </TouchableOpacity>  
 
-                    <TouchableOpacity style={styles.basicButton} onPress={() => {removePlayerAndReset(-1)}}>
-                        <Text style={styles.basicButtonText}>Remove Player</Text>
-                    </TouchableOpacity>  
+                        <TouchableOpacity style={styles.basicButton} onPress={() => {removePlayerAndReset(-1)}}>
+                            <Text style={styles.basicButtonText}>Remove Player</Text>
+                        </TouchableOpacity>  
 
-                    <TouchableOpacity style={styles.basicButton} onPress={() => {resetEverything()}}>
-                        <Text style={styles.basicButtonText}>Reset Hand</Text>
-                    </TouchableOpacity>  
+                        <TouchableOpacity style={styles.basicButton} onPress={() => {resetEverything()}}>
+                            <Text style={styles.basicButtonText}>Reset Hand</Text>
+                        </TouchableOpacity>  
 
-                </View>
+                    </View>
 
-                <View>
+                    <View>
 
-                    <TouchableOpacity style={styles.basicButton} onPress={() => navigation.push('HistoryScreen')}>
-                        <Text style={styles.basicButtonText}>History Screen</Text>
-                    </TouchableOpacity>  
+                        <TouchableOpacity style={styles.basicButton} onPress={() => navigation.push('HistoryScreen')}>
+                            <Text style={styles.basicButtonText}>History Screen</Text>
+                        </TouchableOpacity>  
 
-                    <TouchableOpacity style={styles.basicButton} onPress={() => navigation.navigate('Home')}>
-                        <Text style={styles.basicButtonText}>Go To Home</Text>
-                    </TouchableOpacity>  
+                        <TouchableOpacity style={styles.basicButton} onPress={() => navigation.navigate('Home')}>
+                            <Text style={styles.basicButtonText}>Go To Home</Text>
+                        </TouchableOpacity>  
 
-                    
-                    <TouchableOpacity style={styles.basicButton} onPress={() => saveRecord()}>
-                        <Text style={styles.basicButtonText}>Save Hand Record</Text>
-                    </TouchableOpacity> 
+                        
+                        <TouchableOpacity style={styles.basicButton} onPress={() => setFileModalVisible(true)}>
+                            <Text style={styles.basicButtonText}>Save Hand Record</Text>
+                        </TouchableOpacity> 
+
+                    </View>
 
                 </View>
 
@@ -1580,6 +1894,18 @@ export default function SessionScreen({ route, navigation }) {
 
 
 const styles = StyleSheet.create({
+    topSegment: {
+        flex: 0.49,
+    },
+
+    midSegment: {
+        flex: 0.31,
+    },
+
+    botSegment: {
+        flex: 0.2,
+    },
+
     imgBackground: {
         width: '100%',
         height: '100%',
@@ -1594,11 +1920,21 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
+
     row: {
         flex: 1,
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: 'space-between'
+        //justifyContent: 'space-between',
+        justifyContent: 'center'
+    },
+
+    rowSpBet: {
+        flex: 1,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: 'space-between',
+        //justifyContent: 'center'
     },
 
     butRow: {
@@ -1617,14 +1953,16 @@ const styles = StyleSheet.create({
     default: {
         alignItems: "center",
         textAlign: "center",
-        backgroundColor: "grey",
+        //backgroundColor: "rgb(46,139,87)",
+        backgroundColor: "rgb(0,0,0)",
         fontSize: 16,
         borderWidth: 0.7,
         //borderColor: "rgb(255,215,0)", 
         padding: 0,
         elevation: 0,
         zIndex: 0,
-        opacity: 0.7
+        opacity: 0.7,
+        color: "white"
     },
 
     defaultPosSt: {
@@ -1653,24 +1991,10 @@ const styles = StyleSheet.create({
         opacity: 1
     },
 
-    blinds: {
-        alignItems: "center",
-        textAlign: "center",
-        backgroundColor: "green",
-        fontSize: 16,
-        borderWidth: 0.7,
-        borderColor: "rgb(255,215,0)", 
-        padding: 0,
-        elevation: 0,
-        zIndex: 0,
-        borderColor: "rgb(255,215,0)",
-        opacity: 1
-    },
-
     activePlayer: {
         alignItems: "center",
         textAlign: "center",
-        backgroundColor: "grey",
+        backgroundColor: "rgb(139,0,0)",
         fontSize: 16,
         borderWidth: 0.7,
         borderBottomColor: "rgb(255,0,0)",
@@ -1680,13 +2004,14 @@ const styles = StyleSheet.create({
         elevation: 0,
         zIndex: 0,
         //borderColor: "rgb(255,215,0)",
-        opacity: 1
+        opacity: 1,
+        color: "white",
     },
 
     activeFlavor: {
         alignItems: "center",
         textAlign: "center",
-        backgroundColor: "grey",
+        backgroundColor: "rgb(139,0,0)",
         fontSize: 16,
         borderWidth: 0.7,
         borderBottomColor: "rgb(255,0,0)",
@@ -1695,13 +2020,14 @@ const styles = StyleSheet.create({
         elevation: 0,
         zIndex: 0,
         //borderColor: "rgb(255,215,0)",
-        opacity: 1
+        opacity: 1,
+        color: "white",
     },
 
     activeBankRoll: {
         alignItems: "center",
         textAlign: "center",
-        backgroundColor: "grey",
+        backgroundColor: "rgb(139,0,0)",
         fontSize: 16,
         borderWidth: 0.7,
         borderBottomColor: "rgb(255,0,0)",
@@ -1711,30 +2037,16 @@ const styles = StyleSheet.create({
         elevation: 0,
         zIndex: 0,
         //borderColor: "rgb(255,215,0)",
-        opacity: 1
+        opacity: 1,
+        color: "white",
     },
-    
-    folded: {
-        alignItems: "center",
-        textAlign: "center",
-        backgroundColor: "black",
-        fontSize: 16,
-        borderWidth: 0.7,
-        borderColor: "rgb(255,215,0)", 
-        padding: 0,
-        elevation: 0,
-        zIndex: 0,
-        //borderColor: "rgb(255,215,0)",
-        opacity: 1
-    },
+
 
     dealerPosSt: {
         alignItems: "center",
         textAlign: "center",
         color: "rgb(255,255,255)",
         fontSize: 17,
-
-
     },
 
     blindPosSt: {
@@ -1743,6 +2055,18 @@ const styles = StyleSheet.create({
         textAlign: "center",
         color: "rgb(255,215,0)",
         fontSize: 17,
+
+    },
+
+    potStyle: {
+
+        fontSize: 18,
+
+
+    },
+
+    stageStyle: {
+        fontSize: 18,
 
     },
 
@@ -1763,9 +2087,12 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: 22
     },
+
     modalView: {
         margin: 10,
-        backgroundColor: "white",
+        opacity: 0.9,
+        backgroundColor: "rgb(0,150,0)",
+        borderColor: "rgb(255,255,255)",
         borderRadius: 20,
         padding: 10,
         alignItems: "center",
@@ -1775,7 +2102,7 @@ const styles = StyleSheet.create({
             height: 2
         },
         shadowOpacity: 0.25,
-        shadowRadius: 4,
+        shadowRadius: 8,
         elevation: 5
     },
 
@@ -1784,17 +2111,28 @@ const styles = StyleSheet.create({
         padding: 10,
         elevation: 2,
         zIndex: 0,
-        backgroundColor: "white",
+        backgroundColor: "rgb(255,50,0)",
+        borderWidth: 0.7,
+        borderColor: "rgb(255,255,255)", 
+    },
+
+    buttonOpen: {
+        backgroundColor: "#F194FF",
+    },
+
+    buttonClose: {
+        backgroundColor: "rgb(255,50,0)",
     },
 
     basicButton: {
+        justifyContent: "center",
+        alignItems: "center",
         borderWidth: 0.7,
         borderColor: "rgb(255,215,0)", 
         padding: 10,
         elevation: 0,
         zIndex: 0,
         backgroundColor: "black",
-        borderColor: "rgb(255,215,0)",
         opacity: 1
     },
 
@@ -1804,43 +2142,37 @@ const styles = StyleSheet.create({
 
     },
 
+    cardSelectText: {
+
+        color: "rgb(255,215,0)",
+        fontSize: 20,
+
+
+    },
+
     editButton: {
         borderWidth: 0.7,
+        borderRadius: 20,
         borderColor: "rgb(255,215,0)", 
         padding: 0,
         elevation: 0,
         zIndex: 0,
-        backgroundColor: "white",
-        borderColor: "rgb(255,215,0)",
+        backgroundColor: "rgb(0,0,0)",
         opacity: 1
     },
 
     editButtonText: {
         fontSize: 16,
+        color: "rgb(255,215,0)"
     },
 
-    winner: {
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2,
-        zIndex: 0,
-        backgroundColor: "#F194FF",
-    },
-
-
-    buttonOpen: {
-        backgroundColor: "#F194FF",
-    },
-
-    buttonClose: {
-        backgroundColor: "#2196F3",
-    },
 
     textStyle: {
-        color: "white",
+        color: "rgb(255,255,255)",
         fontWeight: "bold",
-        textAlign: "center"
+        textAlign: "center",
     },
+
     modalText: {
         marginBottom: 15,
         textAlign: "center"
@@ -1864,6 +2196,68 @@ const styles = StyleSheet.create({
     nameTextSt: {
         backgroundColor: "white",
 
+    },
+
+    cardSelectSt: {
+
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        zIndex: 0,
+        backgroundColor: "rgb(139,0,0)",
+        borderWidth: 0.7,
+        borderColor: "rgb(255,215,0)",
+
+    },
+
+    cardOptionSt: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        zIndex: 0,
+        backgroundColor: "black",
+        borderWidth: 0.7,
+        borderColor: "black", 
+    },
+
+    spadeOption: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        zIndex: 0,
+        backgroundColor: "black",
+        borderWidth: 0.7,
+        borderColor: "black", 
+    },
+
+    clubOption: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        zIndex: 0,
+        backgroundColor: "green",
+        borderWidth: 0.7,
+        borderColor: "rgb(0,100,0)", 
+    },
+
+    diamondOption: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        zIndex: 0,
+        backgroundColor: "blue",
+        borderWidth: 0.7,
+        borderColor: "blue", 
+    },
+
+    heartOption: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        zIndex: 0,
+        backgroundColor: "red",
+        borderWidth: 0.7,
+        borderColor: "red", 
     },
 
 });
