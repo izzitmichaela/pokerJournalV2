@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, ScrollView, Text, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, SafeAreaView, View, ScrollView, Text, Button, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 import { useState } from "react";
@@ -12,6 +12,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 
 
+
+
+
+
 export default function HistoryScreen( {navigation} ){
   const [modalVisible, setModalVisible] = useState(false);
   const [keyTotal, setKeyTotal] = useState([])
@@ -19,11 +23,14 @@ export default function HistoryScreen( {navigation} ){
   const [tableUpdated, setTableUpdated] = useState(false)
   const [totalData, setTotalData] = useState([])
   const [remountCount, setRemountCount] = useState(0)
+  const [currentSelection, setCurrentSelection] = useState('Please select a game to view record')
+  const [formattedeSelection, setFormattedSelection] = useState([]);
+  const [testVariable, setTestVariable] = useState('This is a test /n second line')
+  const [rawRecord, setRawRecord] = useState('')
 
   React.useEffect(() => {
     
     getAllKeys()
-    updateTable()
 
 
   }, [remountCount])
@@ -37,14 +44,48 @@ export default function HistoryScreen( {navigation} ){
     let keys = []
     try {
       keys = await AsyncStorage.getAllKeys()
+      setKeyTotal(keys)
+
+      var temp = []
+      var butCol
+      var dateCol
+      var nameCol
+  
+      for (let i = 0; i < keys.length; i++) {
+        //masterString = getData(keyTotal[i])
+        pieces = keys[i].split('_')
+        nameCol = pieces[0]
+  
+        dateCol = pieces[1]
+    
+    
+        butCol = 
+        <TouchableOpacity onPress = {() => {
+          setEditID(i)
+          getData(keys[i])
+          refresh()
+          //setCurrentSelection()
+        }}>
+    
+          <Text> Select </Text>
+        </TouchableOpacity>
+    
+        temp.push([nameCol, dateCol, butCol])
+      
+      }
+
+      console.log('Table Updated')
+      //console.log('Temp',temp)
+      setTableUpdated(true)
+      setTotalData(temp)
 
     } catch(e) {
       // read key error
     }
 
-    setKeyTotal(keys)
-    console.log(keys)
-    refresh()
+    
+    console.log('Keys',keys)
+    //refresh()
     // example console.log result:
     // ['@MyApp_user', '@MyApp_key']
   }
@@ -61,42 +102,6 @@ export default function HistoryScreen( {navigation} ){
   }
 
 
-  const updateTable = () => {
-    var temp = []
-    var butCol
-    var dateCol
-    var nameCol
-
-    for (let i = 0; i < keyTotal.length; i++) {
-      //masterString = getData(keyTotal[i])
-      pieces = keyTotal[i].split('_')
-      nameCol = pieces[0]
-
-      dateCol = pieces[1]
-  
-  
-      butCol = 
-      <TouchableOpacity onPress = {() => {
-        setEditID(i)
-        setModalVisible(!modalVisible)
-      }}>
-  
-        <Text> Select </Text>
-      </TouchableOpacity>
-  
-      temp.push([nameCol, dateCol, butCol])
-    
-    }
-    console.log('Table Updated')
-    console.log(temp)
-    setTableUpdated(true)
-    setTotalData(temp)
-
-    return (<Text>Please Wait</Text>)
-
-  
-  }
-
 
 
   const [tableHead, setTableHead] = useState(['Name', 'Date', 'Edit']);
@@ -104,17 +109,31 @@ export default function HistoryScreen( {navigation} ){
 
 
 
-  const getData = async (item) => {
+  getData = async (item) => {
       try {
         const value = await AsyncStorage.getItem(item)
+
         if(value !== null) {
-          // value previously stored
-          console.log(value)
-          return value
+          // means it has grabbed the value previously stored
+
+          let lines = value.split('/n')
+          let output = [<Text key = {-1}>Game Record</Text>]
+          setRawRecord(value)
+      
+          for (i =0; i<lines.length; i++) {
+            output.push(<Text key = {i}>{lines[i]}</Text>)
+      
+          }
+          console.log(output)
+
+          
+      
+          setFormattedSelection(output)
+
         }
-      } catch(e) {
-        // error reading value
-      }
+    } catch(e) {
+      // error reading value
+    }
 
       
   }
@@ -135,25 +154,25 @@ export default function HistoryScreen( {navigation} ){
 
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Text>Test</Text>
+               <Text>Are you sure?</Text>
 
-              <TouchableOpacity onPress = {() => {
-                console.log(totalData[editID][0])
-                  removeValue(totalData[editID][0])
+              <TouchableOpacity style={styles.basicButton} onPress = {() => {
+                  console.log('key2del', keyTotal[editID])
+                  removeValue(keyTotal[editID])
 
                   setEditID(-1)
                   refresh()
                   setModalVisible(!modalVisible)
                 }}>
     
-                <Text> Delete </Text>
+                <Text style={styles.basicButtonText}> Yes, Delete </Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress = {() => {
+              <TouchableOpacity style={styles.basicButton} onPress = {() => {
                 setModalVisible(!modalVisible)
                 }}>
     
-                <Text> Cancel </Text>
+                <Text style={styles.basicButtonText}> Cancel </Text>
               </TouchableOpacity>
 
             </View>
@@ -164,7 +183,7 @@ export default function HistoryScreen( {navigation} ){
 
   }
 
- 
+
   return (
 
     <View style={styles.container}>
@@ -190,9 +209,34 @@ export default function HistoryScreen( {navigation} ){
         </Table>
       }
 
+      <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.scroller}>
 
-      <Text>History Screen</Text>
-      <Button title="Get keys" onPress={() => console.log(tableData)} />
+          {formattedeSelection}
+
+        </ScrollView>
+      </SafeAreaView>
+
+      <View style={styles.butRow}>
+        <TouchableOpacity style={styles.basicButton} onPress={() => {
+
+          navigation.navigate('SimulatorScreen', {
+            record: rawRecord
+          });
+
+         }}>
+         <Text style={styles.basicButtonText}>Simulate</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.basicButton} onPress={() => {
+          setModalVisible(!modalVisible)
+          }}>
+          <Text style={styles.basicButtonText}>Delete</Text>
+        </TouchableOpacity>
+
+      </View>
+
+
       <Button
           title="Go to Session Screen"
           onPress={() => navigation.push('SessionScreen')}
@@ -218,6 +262,14 @@ const styles = StyleSheet.create({
     marginTop: 22
   },
 
+  butRow: {
+    //flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    //justifyContent: 'space-between',
+    justifyContent: 'center'
+},
+
   modalView: {
       margin: 10,
       opacity: 0.9,
@@ -237,4 +289,31 @@ const styles = StyleSheet.create({
   },
 
   dataWrapper: { marginTop: -1 },
+
+  container: {
+    flex: 0.8,
+  },
+
+  scroller: {
+    backgroundColor: 'pink',
+    marginHorizontal: 20,
+  },
+
+  basicButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 0.7,
+    borderColor: "rgb(255,215,0)", 
+    padding: 10,
+    elevation: 0,
+    zIndex: 0,
+    backgroundColor: "black",
+    opacity: 1
+  },
+
+  basicButtonText: {
+
+      color: "rgb(255,215,0)",
+
+  },
 });

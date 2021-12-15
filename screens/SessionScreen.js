@@ -1531,7 +1531,7 @@ export default function SessionScreen({ route, navigation }) {
                                     refresh();
                                 }}
                                 >
-                                <Text style={styles.textStyle}>{"Confirm"}</Text>
+                                <Text style={styles.textStyle}>{"Save"}</Text>
                             </TouchableOpacity>
 
                             

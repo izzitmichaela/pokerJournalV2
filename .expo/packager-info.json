@@ -3,8 +3,8 @@
   "expoServerPort": null,
   "packagerPort": 19000,
   "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null,
+  "expoServerNgrokUrl": "https://3g-g5s.anonymous.test6.exp.direct",
+  "packagerNgrokUrl": "https://packager.3g-g5s.anonymous.test6.exp.direct",
+  "ngrokPid": 9660,
   "webpackServerPort": null
 }

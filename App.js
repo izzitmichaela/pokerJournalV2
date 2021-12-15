@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import SessionScreen from './screens/SessionScreen.js'
 import HistoryScreen from './screens/HistoryScreen.js'
 import SetupScreen from './screens/SetupScreen.js'
+import SimulatorScreen from './screens/SimulatorScreen.js'
 
 
 function HomeScreen( { navigation }) {
@@ -39,6 +40,8 @@ function App() {
         <Stack.Screen name="SetupScreen" component={SetupScreen} />
         <Stack.Screen name="SessionScreen" component={SessionScreen} />
         <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
+        <Stack.Screen name="SimulatorScreen" component={SimulatorScreen} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
