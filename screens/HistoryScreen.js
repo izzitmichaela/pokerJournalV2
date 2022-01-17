@@ -74,7 +74,7 @@ export default function HistoryScreen( {navigation} ){
       
       }
 
-      console.log('Table Updated')
+      //console.log('Table Updated')
       //console.log('Temp',temp)
       setTableUpdated(true)
       setTotalData(temp)
@@ -84,7 +84,7 @@ export default function HistoryScreen( {navigation} ){
     }
 
     
-    console.log('Keys',keys)
+    //console.log('Keys',keys)
     //refresh()
     // example console.log result:
     // ['@MyApp_user', '@MyApp_key']
@@ -124,7 +124,7 @@ export default function HistoryScreen( {navigation} ){
             output.push(<Text key = {i}>{lines[i]}</Text>)
       
           }
-          console.log(output)
+          //console.log(output)
 
           
       
@@ -157,7 +157,7 @@ export default function HistoryScreen( {navigation} ){
                <Text>Are you sure?</Text>
 
               <TouchableOpacity style={styles.basicButton} onPress = {() => {
-                  console.log('key2del', keyTotal[editID])
+                  //console.log('key2del', keyTotal[editID])
                   removeValue(keyTotal[editID])
 
                   setEditID(-1)

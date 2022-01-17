@@ -21,7 +21,7 @@ var record = [];
 //Variables denoting the arrays that will store the hand instructions
 var currentDate = moment().format("DD/MM/YYYY");
 var currentTime = moment().format("LTS")
-var handNum = 0
+var handNum = 1
 
 
 //var RNFS = require('react-native-fs');
@@ -189,7 +189,7 @@ export default function SessionScreen({ route, navigation }) {
     const [bankroll, setBankroll] = useState([(20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2), (20*bigBlind).toFixed(2)])
 
 
-    const [handRecord, setHandRecord] = useState("Session: " + currentDate + " " + currentTime + "/ Hand #" + handNum + "/n");
+    const [handRecord, setHandRecord] = useState("Session: " + currentDate + " " + currentTime + "/ Hand #" + handNum + "/n" + "Players: " + players);
     const [actionRecord, setActionRecord] = useState('');
     const [playerRecord, setPlayerRecord] = useState('');
     const [preflopRecord, setPreflopRecord] = useState('');
@@ -636,10 +636,10 @@ export default function SessionScreen({ route, navigation }) {
 
         
 
-        let tempRec = '// '
+        let tempRec = ''
 
         for (let i = 0; i < players; i++) {
-            tempRec = tempRec + namesArray[i] + "(" + temp[i] + ") $" + bankroll[i] + " // "
+            tempRec = tempRec + namesArray[i] + "(" + temp[i] + ") $" + bankroll[i] + " /n "
             
         }
 
@@ -1466,7 +1466,7 @@ export default function SessionScreen({ route, navigation }) {
         var tPot = 'POT: $' + turnPot + '/n'
         var rPot = 'POT: $' + riverPot + '/n'
 
-        record.push(("Hand #" + handNum + "/n" + '*** PREFLOP ***/n' + holeCards + preflopRecord + '*** FLOP ***/n' + fPot  + flopBoard + flopRecord + '*** TURN ***/n' + tPot + turnBoard + turnRecord + '*** RIVER ***/n' + rPot + riverBoard + riverRecord + '*** RESULTS ***/n' + r + '/n'))
+        record.push(("Hand #" + handNum + "/n" + playerRecord + '*** PREFLOP ***/n' + holeCards + preflopRecord + '*** FLOP ***/n' + fPot  + flopBoard + flopRecord + '*** TURN ***/n' + tPot + turnBoard + turnRecord + '*** RIVER ***/n' + rPot + riverBoard + riverRecord + '*** RESULTS ***/n' + r + '/n'))
 
         //console.log(record)
 
